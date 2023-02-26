@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,31 +8,26 @@ datasource db {
 }
 
 model User {
-  id         Int       @id @default(autoincrement())
-  email      String    @unique
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
   name       String?
-  userId     Int
-  Cliente    Cliente[]
-  created_at DateTime  @default(now())
-  update_at  DateTime  @updatedAt
+  created_at DateTime @default(now())
+  update_at  DateTime @updatedAt
+  empresa    Empresa? @relation(fields: [empresaId], references: [id])
+  empresaId  Int?
 
   @@map("users")
 }
 
 model Cliente {
-  id    Int    @id @default(autoincrement())
-  email String @unique
-
-  name String?
-
-  status     Boolean  @default(true)
-  Tiket      Tiket[]
-  userId     Int
-  usuario    User     @relation(fields: [userId], references: [id])
-  empresa    Empresa  @relation(fields: [empresaId], references: [id])
-  created_at DateTime @default(now())
-  update_at  DateTime @updatedAt
-  empresaId  Int
+  id         Int       @id @default(autoincrement())
+  email      String    @unique
+  name       String?
+  status     Boolean   @default(true)
+  created_at DateTime  @default(now())
+  update_at  DateTime  @updatedAt
+  empresaId  Int?
+  Empresa    Empresa[]
 
   @@map("clientes")
 }
@@ -50,88 +42,95 @@ model Empresa {
   tipo          EmpresaType @default(JURIDICA)
   created_at    DateTime    @default(now())
   update_at     DateTime    @updatedAt
-  Cliente       Cliente[]
+  cliente       Cliente     @relation(fields: [clienteId], references: [id])
+  clienteId     Int
+  User          User[]
+  Tecnico       Tecnico[]
+  Tiket         Tiket[]
 
   @@map("empresas")
 }
 
 model Tecnico {
-  id            Int         @id @default(autoincrement())
-  email         String      @unique
-  type          String
-  name          String?
-  tipo          TecnicoTipo @relation(fields: [tecnicoTipoId], references: [id])
-  userId        Int
-  tecnicoTipoId Int
-  created_at    DateTime    @default(now())
-  update_at     DateTime    @updatedAt
+  id          Int           @id @default(autoincrement())
+  email       String        @unique
+  type        String?
+  name        String?
+  created_at  DateTime      @default(now())
+  update_at   DateTime      @updatedAt
+  TecnicoTipo TecnicoTipo[]
+  empresa     Empresa?      @relation(fields: [empresaId], references: [id])
+  empresaId   Int?
+  Tiket       Tiket[]
 
   @@map("tecnicos")
 }
 
 model Tiket {
-  id                 Int         @id @default(autoincrement())
-  problema_informado String
-  cliente            String
+  id                 Int           @id @default(autoincrement())
+  problema_informado String?
   observacao         String?
-  categoria          Categoria   @relation(fields: [categoriaId], references: [id])
-  status             TiketStatus @relation(fields: [tiketStatusId], references: [id])
-  prioridade         Prioridade  @relation(fields: [prioridadeId], references: [id])
-  client             Cliente     @relation(fields: [clienteId], references: [id])
-  clienteId          Int
-  categoriaId        Int
-  created_at         DateTime    @default(now())
-  update_at          DateTime    @updatedAt
-  prioridadeId       Int
-  tiketStatusId      Int
+  created_at         DateTime      @default(now())
+  update_at          DateTime      @updatedAt
+  Categoria          Categoria[]
+  TiketStatus        TiketStatus[]
+  Prioridade         Prioridade[]
+  empresa            Empresa?      @relation(fields: [empresaId], references: [id])
+  empresaId          Int?
+  tecnico            Tecnico?      @relation(fields: [tecnicoId], references: [id])
+  tecnicoId          Int?
 
   @@map("tickets")
 }
 
 model Categoria {
-  id            Int         @id @default(autoincrement())
-  name          String
-  color         String
-  categoria     Subategoria @relation(fields: [subategoriaId], references: [id])
-  subategoriaId Int
-  Tiket         Tiket[]
+  id          Int           @id @default(autoincrement())
+  name        String
+  color       String
+  Subategoria Subategoria[]
+  tiket       Tiket?        @relation(fields: [tiketId], references: [id])
+  tiketId     Int?
 
   @@map("categorias")
 }
 
 model Subategoria {
-  id        Int         @id @default(autoincrement())
-  name      String
-  color     String
-  Categoria Categoria[]
+  id          Int        @id @default(autoincrement())
+  name        String?
+  color       String?
+  categoria   Categoria? @relation(fields: [categoriaId], references: [id])
+  categoriaId Int?
 
   @@map("subcategorias")
 }
 
 model Prioridade {
-  id    Int     @id @default(autoincrement())
-  name  String
-  color String
-  icon  String
-  Tiket Tiket[]
+  id      Int     @id @default(autoincrement())
+  name    String?
+  color   String?
+  icon    String?
+  tiket   Tiket?  @relation(fields: [tiketId], references: [id])
+  tiketId Int?
 
   @@map("prioridades")
 }
 
 model TiketStatus {
   id         Int      @id @default(autoincrement())
-  name       String
-  Tiket      Tiket[]
+  name       String?
   created_at DateTime @default(now())
   update_at  DateTime @updatedAt
+  tiket      Tiket?   @relation(fields: [tiketId], references: [id])
+  tiketId    Int?
 
   @@map("tiket_status")
 }
 
 model TecnicoTipo {
-  id      Int       @id @default(autoincrement())
-  name    String
-  Tecnico Tecnico[]
+  id        Int      @id @default(autoincrement())
+  name      String?
+  tecnico   Tecnico? @relation(fields: [tecnicoId], references: [id])
+  tecnicoId Int?
 
   @@map("tecnico_tipo")
 }
