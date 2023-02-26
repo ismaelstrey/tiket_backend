@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  email      String    @unique
+  name       String?
+  userId     Int
+  Cliente    Cliente[]
+  created_at DateTime  @default(now())
+  update_at  DateTime  @updatedAt
+
+  @@map("users")
+}
+
+model Cliente {
+  id    Int    @id @default(autoincrement())
+  email String @unique
+
+  name String?
+
+  status     Boolean  @default(true)
+  Tiket      Tiket[]
+  userId     Int
+  usuario    User     @relation(fields: [userId], references: [id])
+  empresa    Empresa  @relation(fields: [empresaId], references: [id])
+  created_at DateTime @default(now())
+  update_at  DateTime @updatedAt
+  empresaId  Int
+
+  @@map("clientes")
+}
+
+model Empresa {
+  id            Int         @id @default(autoincrement())
+  razao_social  String?
+  nome_fantasia String?
+  ie            String?
+  name          String?
+  clientes      String?
+  tipo          EmpresaType @default(JURIDICA)
+  created_at    DateTime    @default(now())
+  update_at     DateTime    @updatedAt
+  Cliente       Cliente[]
+
+  @@map("empresas")
+}
+
+model Tecnico {
+  id            Int         @id @default(autoincrement())
+  email         String      @unique
+  type          String
+  name          String?
+  tipo          TecnicoTipo @relation(fields: [tecnicoTipoId], references: [id])
+  userId        Int
+  tecnicoTipoId Int
+  created_at    DateTime    @default(now())
+  update_at     DateTime    @updatedAt
+
+  @@map("tecnicos")
+}
+
+model Tiket {
+  id                 Int         @id @default(autoincrement())
+  problema_informado String
+  cliente            String
+  observacao         String?
+  categoria          Categoria   @relation(fields: [categoriaId], references: [id])
+  status             TiketStatus @relation(fields: [tiketStatusId], references: [id])
+  prioridade         Prioridade  @relation(fields: [prioridadeId], references: [id])
+  client             Cliente     @relation(fields: [clienteId], references: [id])
+  clienteId          Int
+  categoriaId        Int
+  created_at         DateTime    @default(now())
+  update_at          DateTime    @updatedAt
+  prioridadeId       Int
+  tiketStatusId      Int
+
+  @@map("tickets")
+}
+
+model Categoria {
+  id            Int         @id @default(autoincrement())
+  name          String
+  color         String
+  categoria     Subategoria @relation(fields: [subategoriaId], references: [id])
+  subategoriaId Int
+  Tiket         Tiket[]
+
+  @@map("categorias")
+}
+
+model Subategoria {
+  id        Int         @id @default(autoincrement())
+  name      String
+  color     String
+  Categoria Categoria[]
+
+  @@map("subcategorias")
+}
+
+model Prioridade {
+  id    Int     @id @default(autoincrement())
+  name  String
+  color String
+  icon  String
+  Tiket Tiket[]
+
+  @@map("prioridades")
+}
+
+model TiketStatus {
+  id         Int      @id @default(autoincrement())
+  name       String
+  Tiket      Tiket[]
+  created_at DateTime @default(now())
+  update_at  DateTime @updatedAt
+
+  @@map("tiket_status")
+}
+
+model TecnicoTipo {
+  id      Int       @id @default(autoincrement())
+  name    String
+  Tecnico Tecnico[]
+
+  @@map("tecnico_tipo")
+}
+
+enum EmpresaType {
+  FISICA
+  JURIDICA
+}
