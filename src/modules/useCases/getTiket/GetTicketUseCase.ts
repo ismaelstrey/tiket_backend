@@ -1,8 +1,8 @@
 import { prisma } from "../../../prisma/client";
-import { Tiket } from "@prisma/client";
+
 
 export class GetTiketUseCase {
-  async execute(): Promise<Tiket> {
+  async execute() {
     const getAllTiket = await prisma.tiket.findMany({
       select: {
         problema_informado: true,

@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.tiketRoutes = void 0;
+const express_1 = require("express");
+const CreateTiketController_1 = require("../modules/useCases/createTiket/CreateTiketController");
+const GetTiketController_1 = require("../modules/useCases/getTiket/GetTiketController");
+const createTiketController = new CreateTiketController_1.CreateTiketController();
+const getTiketController = new GetTiketController_1.GetTiketController();
+const tiketRoutes = (0, express_1.Router)();
+exports.tiketRoutes = tiketRoutes;
+tiketRoutes.post("/", createTiketController.handle);
+tiketRoutes.get("/", getTiketController.handle);

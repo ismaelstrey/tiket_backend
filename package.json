@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "Back end de um sistema de tiket",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node-dev --exit-child --transpile-only --ignore-watch node_modules src/server.ts"
+    "dev": "ts-node-dev --exit-child --transpile-only --ignore-watch node_modules src/server.ts",
+    "serve": "node src/server.js"
   },
   "repository": {
     "type": "git",
