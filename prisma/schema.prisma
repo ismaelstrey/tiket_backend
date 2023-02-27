@@ -41,9 +41,9 @@ model Empresa {
   clientes      String?
   tipo          EmpresaType @default(JURIDICA)
   created_at    DateTime    @default(now())
-  update_at     DateTime    @updatedAt
-  cliente       Cliente     @relation(fields: [clienteId], references: [id])
-  clienteId     Int
+  update_at     DateTime?   @updatedAt
+  cliente       Cliente?    @relation(fields: [clienteId], references: [id])
+  clienteId     Int?
   User          User[]
   Tecnico       Tecnico[]
   Tiket         Tiket[]
@@ -67,18 +67,21 @@ model Tecnico {
 }
 
 model Tiket {
-  id                 Int           @id @default(autoincrement())
+  id                 Int          @id @default(autoincrement())
   problema_informado String?
   observacao         String?
-  created_at         DateTime      @default(now())
-  update_at          DateTime      @updatedAt
-  Categoria          Categoria[]
-  TiketStatus        TiketStatus[]
-  Prioridade         Prioridade[]
-  empresa            Empresa?      @relation(fields: [empresaId], references: [id])
+  created_at         DateTime     @default(now())
+  update_at          DateTime     @updatedAt
+  status             TiketStatus? @relation(fields: [tiketStatusId], references: [id])
+  prioridade         Prioridade?  @relation(fields: [prioridadeId], references: [id])
+  empresa            Empresa?     @relation(fields: [empresaId], references: [id])
   empresaId          Int?
-  tecnico            Tecnico?      @relation(fields: [tecnicoId], references: [id])
+  tecnico            Tecnico?     @relation(fields: [tecnicoId], references: [id])
   tecnicoId          Int?
+  prioridadeId       Int?
+  tiketStatusId      Int?
+  categoria          Categoria?   @relation(fields: [categoriaId], references: [id])
+  categoriaId        Int?
 
   @@map("tickets")
 }
@@ -87,30 +90,28 @@ model Categoria {
   id          Int           @id @default(autoincrement())
   name        String
   color       String
-  Subategoria Subategoria[]
-  tiket       Tiket?        @relation(fields: [tiketId], references: [id])
-  tiketId     Int?
+  subategoria Subategoria[]
+  iiket       Tiket[]
 
   @@map("categorias")
 }
 
 model Subategoria {
-  id          Int        @id @default(autoincrement())
-  name        String?
-  color       String?
-  categoria   Categoria? @relation(fields: [categoriaId], references: [id])
-  categoriaId Int?
+  id              Int        @id @default(autoincrement())
+  name            String?
+  color           String?
+  sub_categoria   Categoria? @relation(fields: [sub_categoriaId], references: [id])
+  sub_categoriaId Int?
 
   @@map("subcategorias")
 }
 
 model Prioridade {
-  id      Int     @id @default(autoincrement())
-  name    String?
-  color   String?
-  icon    String?
-  tiket   Tiket?  @relation(fields: [tiketId], references: [id])
-  tiketId Int?
+  id    Int     @id @default(autoincrement())
+  name  String?
+  color String?
+  icon  String?
+  Tiket Tiket[]
 
   @@map("prioridades")
 }
@@ -120,8 +121,7 @@ model TiketStatus {
   name       String?
   created_at DateTime @default(now())
   update_at  DateTime @updatedAt
-  tiket      Tiket?   @relation(fields: [tiketId], references: [id])
-  tiketId    Int?
+  tiket      Tiket[]
 
   @@map("tiket_status")
 }
